@@ -1,36 +1,144 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI NFT Creator
+
+A Next.js application that allows users to create AI-scored NFTs from their social media content. The app features wallet connection, AI content scoring, NFT minting, and ERC-20 token rewards.
+
+## Features
+
+- 🔗 **Wallet Connection**: Connect using RainbowKit + Wagmi
+- 🤖 **AI Content Scoring**: Mock AI analysis that scores content from 0-100
+- 🎨 **NFT Minting**: Mint NFTs for high-scoring content (>60)
+- 🪙 **Token Rewards**: Earn CreatorTokens based on your content score
+- 📱 **Responsive Design**: Beautiful UI built with TailwindCSS
+- ⚡ **TypeScript**: Full type safety throughout the application
+
+## Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: TailwindCSS
+- **Wallet**: RainbowKit + Wagmi + Ethers.js
+- **Web3**: Thirdweb SDK
+- **UI**: Custom components with modern design
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+- MetaMask or any Web3 wallet
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd nextjs-ai-nft
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+Create a `.env.local` file in the root directory:
+```env
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id_here
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Get a WalletConnect Project ID:
+- Go to [WalletConnect Cloud](https://cloud.walletconnect.com/)
+- Create a new project
+- Copy the Project ID
+- Add it to your `.env.local` file
 
-## Learn More
+5. Update the Wagmi configuration:
+Edit `src/lib/wagmi.ts` and replace `YOUR_PROJECT_ID` with your actual WalletConnect Project ID.
 
-To learn more about Next.js, take a look at the following resources:
+### Running the Application
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Start the development server:
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+3. Connect your wallet and start creating AI-scored NFTs!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## How It Works
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Submit Content**: Paste a social media post URL and select a content category
+2. **AI Analysis**: The mock AI analyzes your content and provides a score (0-100)
+3. **Mint NFT**: If your score is above 60, you can mint an NFT
+4. **Earn Tokens**: Receive CreatorTokens based on your score (score × 10)
+
+## Project Structure
+
+```
+src/
+├── app/                 # Next.js App Router
+│   ├── layout.tsx      # Root layout with providers
+│   └── page.tsx        # Main homepage
+├── components/         # React components
+│   ├── WalletConnect.tsx
+│   ├── ContentForm.tsx
+│   └── ScoreDisplay.tsx
+├── lib/               # Configuration files
+│   └── wagmi.ts       # Wagmi configuration
+├── types/             # TypeScript type definitions
+│   └── index.ts
+└── utils/             # Utility functions
+    ├── ai-scoring.ts  # Mock AI scoring logic
+    └── thirdweb.ts    # Thirdweb utilities
+```
+
+## Customization
+
+### Adding Real AI Integration
+
+Replace the mock AI scoring in `src/utils/ai-scoring.ts` with your actual AI service:
+
+```typescript
+export const realAIScoring = async (post: SocialPost): Promise<number> => {
+  const response = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(post)
+  });
+  
+  const result = await response.json();
+  return result.score;
+};
+```
+
+### Implementing Real NFT Minting
+
+Update the minting logic in `src/app/page.tsx` to use actual Thirdweb contracts:
+
+```typescript
+const { contract } = useContract("your-nft-contract-address");
+const { mutateAsync: mintNFT } = useContractWrite(contract, "mint");
+
+const handleMintNFT = async () => {
+  const metadata = createNFTMetadata(currentPost, score);
+  await mintNFT({ args: [metadata] });
+};
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support, please open an issue in the GitHub repository or contact the development team.
